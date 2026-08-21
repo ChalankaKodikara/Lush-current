@@ -1,149 +1,71 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight, MapPin } from "lucide-react";
-
+import { ArrowLeft, ArrowRight, MapPin, Star } from "lucide-react";
 import BookingBar from "./BookingBar";
 import { money } from "../data/villas";
 
-import hero1 from "../assets/hero/hero-1.jpeg";
-import hero2 from "../assets/hero/hero-2.jpeg";
-import hero3 from "../assets/hero/hero-3.jpeg";
-import hero4 from "../assets/hero/hero-4.jpeg";
-import hero5 from "../assets/hero/hero-5.jpeg";
-import hero6 from "../assets/hero/hero-6.jpeg";
-
 export default function HeroSection({ featured }) {
-  const heroImages = useMemo(
-    () => [hero1, hero2, hero3, hero4, hero5, hero6],
-    [],
-  );
-
+  const heroImages = useMemo(() => featured.images, [featured.images]);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentSlide((prev) =>
-        prev === heroImages.length - 1 ? 0 : prev + 1,
-      );
+      setCurrentSlide((prev) => (prev === heroImages.length - 1 ? 0 : prev + 1));
     }, 5000);
-
     return () => clearInterval(interval);
-  }, [heroImages]);
+  }, [heroImages.length]);
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev === heroImages.length - 1 ? 0 : prev + 1));
-  };
-
-  const previousSlide = () => {
-    setCurrentSlide((prev) => (prev === 0 ? heroImages.length - 1 : prev - 1));
-  };
-
-  const goToSlide = (index) => {
-    setCurrentSlide(index);
-  };
+  const nextSlide = () => setCurrentSlide((prev) => (prev === heroImages.length - 1 ? 0 : prev + 1));
+  const previousSlide = () => setCurrentSlide((prev) => (prev === 0 ? heroImages.length - 1 : prev - 1));
 
   return (
     <section className="landing-hero">
-      {/* =========================
-          HERO IMAGE SLIDER
-      ========================== */}
       <div className="landing-hero-media">
         {heroImages.map((image, index) => (
           <img
             key={image}
             src={image}
-            alt={`Lush Villa ${index + 1}`}
-            className={`landing-hero-slide ${
-              currentSlide === index ? "active" : ""
-            }`}
+            alt={`Lush Current view ${index + 1}`}
+            className={`landing-hero-slide ${currentSlide === index ? "active" : ""}`}
           />
         ))}
       </div>
-
-      {/* Dark overlay */}
       <div className="landing-hero-overlay" />
 
-      {/* =========================
-          HERO CONTENT
-      ========================== */}
       <div className="landing-hero-content">
-        <div className="landing-location-pill">
-          <MapPin size={14} />
-          Sri Lanka
+        <div className="hero-location-badge">
+          <span className="hero-location-icon"><MapPin size={15} /></span>
+          <span><small>AHANGAMA WEST</small><strong>Sri Lanka</strong></span>
         </div>
-
-        <p className="landing-kicker">PRIVATE VILLA EXPERIENCE</p>
-
-        <h1>
-          A quieter way
-          <span>to stay.</span>
-        </h1>
-
+        <p className="landing-kicker">BOUTIQUE GUESTHOUSE · 50 M FROM ZION BEACH</p>
+        <h1>Lush Current.<span>Stay close to the sea.</span></h1>
         <p className="landing-hero-text">
-          Thoughtful spaces, tropical calm and private comfort — designed for
-          slow days and memorable stays.
+          Two king rooms, a private balcony, tropical garden and easy access to Ahangama’s surf, cafes and sunsets.
         </p>
-
         <div className="landing-hero-actions">
-          <Link className="landing-btn landing-btn-light" to="/booking">
-            Book your stay
-            <ArrowRight size={17} />
-          </Link>
-
-          <Link className="landing-btn landing-btn-ghost" to="/villas">
-            Explore the villa
-          </Link>
+          <Link className="landing-btn landing-btn-light" to="/booking">Book your stay <ArrowRight size={17} /></Link>
+          <Link className="landing-btn landing-btn-ghost" to="/villas/lush-current">Explore the stay</Link>
         </div>
+        <div className="hero-rating"><Star size={15} fill="currentColor" /> <strong>{featured.rating.toFixed(1)}</strong><span>Guest favourite · {featured.reviewCount} reviews</span></div>
       </div>
 
-      {/* =========================
-          PRICE
-      ========================== */}
-      {featured && (
-        <div className="landing-price-chip">
-          <span>Stays from</span>
+      <div className="landing-price-chip">
+        <span>Direct rate from</span>
+        <strong>{money(featured.price)}</strong>
+        <small>per night · configured website rate</small>
+      </div>
 
-          <strong>{money(featured.price)}</strong>
-
-          <small>per night</small>
-        </div>
-      )}
-
-      {/* =========================
-          SLIDER ARROWS
-      ========================== */}
       <div className="hero-slider-controls">
-        <button
-          type="button"
-          onClick={previousSlide}
-          aria-label="Previous image"
-        >
-          <ArrowLeft size={18} />
-        </button>
-
-        <button type="button" onClick={nextSlide} aria-label="Next image">
-          <ArrowRight size={18} />
-        </button>
+        <button type="button" onClick={previousSlide} aria-label="Previous image"><ArrowLeft size={18} /></button>
+        <button type="button" onClick={nextSlide} aria-label="Next image"><ArrowRight size={18} /></button>
       </div>
 
-      {/* =========================
-          SLIDER DOTS
-      ========================== */}
       <div className="hero-slider-dots">
         {heroImages.map((_, index) => (
-          <button
-            key={index}
-            type="button"
-            className={currentSlide === index ? "active" : ""}
-            onClick={() => goToSlide(index)}
-            aria-label={`Show image ${index + 1}`}
-          />
+          <button key={index} type="button" className={currentSlide === index ? "active" : ""} onClick={() => setCurrentSlide(index)} aria-label={`Show image ${index + 1}`} />
         ))}
       </div>
 
-      {/* =========================
-          BOOKING SEARCH
-      ========================== */}
       <BookingBar />
     </section>
   );
